@@ -73,6 +73,7 @@ def incomming_texts():
 SOCKET = socket(AF_INET, SOCK_STREAM)
 SOCKET.connect((IP, PORT))
 
+# throwes the exception
 try:
     threading.incomming_texts(incomming_texts, ())
 except:
