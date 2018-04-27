@@ -75,15 +75,20 @@ except:
     print("Error: unable to start thread")
 
 while True:
-    DATA = SOCKET.recv(1024)
+    DATA = decrypt(SOCKET.recv(1024))
+    print(DATA)
 
     if(DATA == 'sync contacts'):
+        print('sending contacts')
         sendcontacts()
 
     if(DATA == 'sync texts'):
+        print('sending texts')
         sendtexts()
 
-    if(DATA == 'send test'):
+    if(DATA == 'send text'):
+        print('sending a textmessage')
         NUMBER = decrypt(SOCKET.recv(1024))
         MESSAGE = decrypt(SOCKET.recv(1024))
         os.system('termux-sms-send -n ' + NUMBER + ' ' + MESSAGE)
+        print('sent message to ' + NUMBER)
