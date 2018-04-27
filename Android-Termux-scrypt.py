@@ -67,6 +67,7 @@ def incomming_texts():
 # Definging the serversocket variable and setting it to use the TCP protocol
 SOCKET = socket(AF_INET, SOCK_STREAM)
 SOCKET.connect((IP, PORT))
+print('connected')
 
 # throwes the exception
 try:
@@ -87,8 +88,12 @@ while True:
         sendtexts()
 
     if(DATA == 'send text'):
-        print('sending a textmessage')
+        print('sending a text message')
         NUMBER = decrypt(SOCKET.recv(1024))
         MESSAGE = decrypt(SOCKET.recv(1024))
-        os.system('termux-sms-send -n ' + NUMBER + ' ' + MESSAGE)
+        os.system('termux-sms-send -n ' + NUMBER + ' ' + str(MESSAGE))
         print('sent message to ' + NUMBER)
+
+    if(DATA == 'exit'):
+        SOCKET.close()
+        sys.exit()
