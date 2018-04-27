@@ -2,10 +2,17 @@
 from socket import socket, AF_INET, SOCK_STREAM
 import pyaes
 import sys
+import subprocess
 import os
 
-IP = '0.0.0.0'
 PORT = 8888
+
+try:
+    IP = open('remote_desktop_ip.conf', 'r').read()
+except FileNotFoundError:
+    print('ERROR: Can\'t find remote_desktop_ip.conf file')
+    sys.exit()
+
 try:
     PASSWORD = open('password.conf', 'r').read()
 except FileNotFoundError:
@@ -33,8 +40,35 @@ def decrypt(MESSAGE):
 
 
 # Definging the serversocket variable and setting it to use the TCP protocol
-#SOCKET = socket(AF_INET, SOCK_STREAM)
-#SOCKET.connect((IP, PORT))
-e = encrypt('testing testing 123')
-d = decrypt(e)
-print(d)
+SOCKET = socket(AF_INET, SOCK_STREAM)
+SOCKET.connect((IP, PORT))
+
+
+def sendcontacts():
+    ContactsRaw = subprocess.Popen(['termux-contact-list'], stdout=subprocess.PIPE)
+    Contacts = bytes.decode(ContactsRaw.communicate()[0])
+    SOCKET.send(bytes.encode(encrypt(Contacts)))
+
+
+def sendtexts():
+    TextsRaw = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
+    Texts = bytes.decode(TextsRaw.communicate()[0])
+    SOCKET.send(bytes.encode(encrypt(Texts)))
+
+
+sendcontacts()
+sendtexts()
+
+while True():
+    DATA = SOCKET.recv(1024)
+
+    if(DATA == 'sync contacts'):
+        sendcontacts()
+
+    if(DATA == 'sync texts'):
+        sendtexts()
+
+    if(DATA == 'send test'):
+        NUMBER = SOCKET.recv(1024)
+        MESSAGE = SOCKET.recv(1024)
+        os.system('termux-sms-send -n ' + NUMBER + ' ' + MESSAGE)
