@@ -66,34 +66,35 @@ def incomming_texts():
 
 # Definging the serversocket variable and setting it to use the TCP protocol
 SOCKET = socket(AF_INET, SOCK_STREAM)
-SOCKET.connect((IP, PORT))
-print('connected')
-
-# throwes the exception
-try:
-    threading.incomming_texts(incomming_texts, ())
-except:
-    print("Error: unable to start thread")
-
 while True:
-    DATA = decrypt(SOCKET.recv(1024))
-    print(DATA)
+    SOCKET.connect((IP, PORT))
+    print('connected')
 
-    if(DATA == 'sync contacts'):
-        print('sending contacts')
-        sendcontacts()
+    # throwes the exception
+    try:
+        threading.incomming_texts(incomming_texts, ())
+    except:
+        print("Error: unable to start thread")
 
-    if(DATA == 'sync texts'):
-        print('sending texts')
-        sendtexts()
+    while True:
+        DATA = decrypt(SOCKET.recv(1024))
+        print(DATA)
 
-    if(DATA == 'send text'):
-        print('sending a text message')
-        NUMBER = decrypt(SOCKET.recv(1024))
-        MESSAGE = decrypt(SOCKET.recv(1024))
-        os.system('termux-sms-send -n ' + NUMBER + ' ' + str(MESSAGE))
-        print('sent message to ' + NUMBER)
+        if(DATA == 'sync contacts'):
+            print('sending contacts')
+            sendcontacts()
 
-    if(DATA == 'exit'):
-        SOCKET.close()
-        sys.exit()
+        if(DATA == 'sync texts'):
+            print('sending texts')
+            sendtexts()
+
+        if(DATA == 'send text'):
+            print('sending a text message')
+            NUMBER = decrypt(SOCKET.recv(1024))
+            MESSAGE = decrypt(SOCKET.recv(1024))
+            os.system('termux-sms-send -n ' + NUMBER + ' ' + MESSAGE)
+            print('sent message to ' + NUMBER)
+
+        if(DATA == 'exit'):
+            SOCKET.close()
+            break
