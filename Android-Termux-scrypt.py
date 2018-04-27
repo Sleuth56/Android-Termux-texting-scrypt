@@ -8,12 +8,10 @@ import os
 import time
 
 PORT = 8888
+IP = '0.0.0.0'
 
-try:
-    IP = open('remote_desktop_ip.conf', 'r').read()
-except FileNotFoundError:
-    print('ERROR: Can\'t find remote_desktop_ip.conf file')
-    sys.exit()
+PORT2 = 8889
+IP2 = '0.0.0.0'
 
 try:
     PASSWORD = open('password.conf', 'r').read()
@@ -54,9 +52,6 @@ def sendtexts():
 
 
 def incomming_texts():
-    PORT2 = 8889
-    IP2 = '0.0.0.0'
-
     SOCKET2 = socket(AF_INET, SOCK_STREAM)
     SOCKET2.connect((IP2, PORT2))
 
