@@ -78,7 +78,7 @@ try:
 except:
     print("Error: unable to start thread")
 
-while True():
+while True:
     DATA = SOCKET.recv(1024)
 
     if(DATA == 'sync contacts'):
