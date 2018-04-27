@@ -1,9 +1,11 @@
 """The companion app for my Android Termux scrypt"""
 from socket import socket, AF_INET, SOCK_STREAM
+import threading
 import pyaes
 import sys
 import subprocess
 import os
+import time
 
 PORT = 8888
 
@@ -39,11 +41,6 @@ def decrypt(MESSAGE):
     return aes.decrypt(MESSAGE).decode('utf-8')
 
 
-# Definging the serversocket variable and setting it to use the TCP protocol
-SOCKET = socket(AF_INET, SOCK_STREAM)
-SOCKET.connect((IP, PORT))
-
-
 def sendcontacts():
     ContactsRaw = subprocess.Popen(['termux-contact-list'], stdout=subprocess.PIPE)
     Contacts = encrypt(bytes.decode(ContactsRaw.communicate()[0]))
@@ -53,8 +50,33 @@ def sendcontacts():
 def sendtexts():
     TextsRaw = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
     Texts = encrypt(bytes.decode(TextsRaw.communicate()[0]))
-    SOCKET.send(bytes.encode(encrypt(Texts)))
+    return bytes.encode(encrypt(Texts))
 
+
+def incomming_texts():
+    PORT2 = 8889
+    IP2 = '0.0.0.0'
+
+    SOCKET2 = socket(AF_INET, SOCK_STREAM)
+    SOCKET2.connect((IP2, PORT2))
+
+    while True:
+        TEXTS1 = sendtexts()
+        time.sleep(1)
+        TEXTS2 = sendtexts()
+
+        if(TEXTS1 != TEXTS2):
+            SOCKET2.send(bytes.decode(decrypt(TEXTS2)))
+
+
+# Definging the serversocket variable and setting it to use the TCP protocol
+SOCKET = socket(AF_INET, SOCK_STREAM)
+SOCKET.connect((IP, PORT))
+
+try:
+    threading.incomming_texts(incomming_texts, ())
+except:
+    print("Error: unable to start thread")
 
 while True():
     DATA = SOCKET.recv(1024)
