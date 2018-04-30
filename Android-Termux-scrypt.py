@@ -1,6 +1,5 @@
 """The companion app for my Android Termux scrypt"""
 from socket import socket, AF_INET, SOCK_STREAM
-import threading
 import pyaes
 import sys
 import subprocess
@@ -14,7 +13,7 @@ PORT2 = 8889
 
 try:
     PASSWORD = open('password.conf', 'r').read()
-except FileNotFoundError:
+except:
     print('ERROR: Can\'t find password.conf file')
     sys.exit()
 
@@ -63,17 +62,14 @@ def incomming_texts():
             SOCKET2.send(bytes.decode(decrypt(TEXTS2)))
 
 
+newthread = incomming_texts()
+newthread.start()
+
 # Definging the serversocket variable and setting it to use the TCP protocol
 SOCKET = socket(AF_INET, SOCK_STREAM)
 while True:
     SOCKET.connect((IP, PORT))
     print('connected')
-
-    # throwes the exception
-    try:
-        threading.incomming_texts(incomming_texts, ())
-    except:
-        print("Error: unable to start thread")
 
     while True:
         DATA = decrypt(SOCKET.recv(1024))
