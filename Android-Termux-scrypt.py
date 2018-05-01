@@ -7,9 +7,10 @@ import os
 import time
 
 PORT = 8888
-IP = '0.0.0.0'
-
 PORT2 = 8889
+
+# This needs changed to a file
+IP = '0.0.0.0'
 
 try:
     PASSWORD = open('password.conf', 'r').read()
