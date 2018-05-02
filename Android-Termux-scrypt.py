@@ -48,8 +48,8 @@ def sendcontacts():
 def incomming_texts():
     print('incomming_texts thread started')
     SOCKET2 = socket(AF_INET, SOCK_STREAM)
-    SOCKET2.conenct((IP, PORT2))
-    print('connected')
+    SOCKET2.connect((IP, PORT2))
+    print('connected on port ' + str(PORT2))
 
     while True:
         TextsRaw1 = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
@@ -78,10 +78,6 @@ while True:
         if(DATA == 'sync contacts'):
             print('sending contacts')
             sendcontacts()
-
-        if(DATA == 'sync texts'):
-            print('sending texts')
-            sendtexts()
 
         if(DATA == 'send text'):
             print('sending a text message')
